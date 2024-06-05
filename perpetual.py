@@ -34,6 +34,11 @@ def calcular_tabla(valor_trade, apalancamiento):
     break_even_dias = comisiones_totales / beneficio_en_dolares
     break_even_horas = break_even_dias * 24
 
+    beneficio_total = num_dias * (beneficio_por_dia_pct - comisiones_totales)
+
+    # Calcular el APR
+    APR = ((beneficio_total / num_dias) / (valor_trade * 2)) * 365
+
     return {
         "Exchange Menor Funding": exchange_menor_funding,
         "Exchange Mayor Funding": exchange_mayor_funding,
@@ -47,13 +52,19 @@ def calcular_tabla(valor_trade, apalancamiento):
         "Beneficio por Día (%)": beneficio_por_dia_pct,
         "Beneficio en Dólares": beneficio_en_dolares,
         "Break Even (Días)": break_even_dias,
-        "Break Even (Horas)": break_even_horas
+        "Break Even (Horas)": break_even_horas,
+        "Beneficio Total": beneficio_total,
+        "APR": APR
     }
 
-# Configurar la interfaz de usuario con Streamlit
 st.title("Calculadora de Arbitraje de Perpetuos")
 valor_trade = st.number_input("Valor del Trade", min_value=0.01, step=0.01)
 apalancamiento = st.number_input("Apalancamiento", min_value=1, step=1)
+num_dias = st.number_input("Número de Días", min_value=1, step=1)
+
+if st.button("Calcular"):
+    resultado = calcular_tabla(valor_trade, apalancamiento, num_dias)
+    st.write(resultado)
 
 if st.button("Calcular"):
     resultado = calcular_tabla(valor_trade, apalancamiento)
