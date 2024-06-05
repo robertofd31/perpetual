@@ -16,7 +16,7 @@ def calcular_tabla(valor_trade, apalancamiento):
     # Calcular las tasas de financiación y la diferencia entre ellas
     funding_menor = exchanges[exchange_menor_funding]["funding_rate"]
     funding_mayor = exchanges[exchange_mayor_funding]["funding_rate"]
-    diferencia_funding = funding_menor - funding_mayor
+    diferencia_funding = funding_mayor - funding_menor
 
     # Calcular las comisiones de taker por trade para ambos exchanges
     fee_exchange_menor = exchanges[exchange_menor_funding]["taker_fee"] * apalancamiento * valor_trade
