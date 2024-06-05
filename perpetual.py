@@ -1,6 +1,4 @@
 import requests
-import pandas as pd
-import json
 from bs4 import BeautifulSoup
 import streamlit as st
 
@@ -75,6 +73,26 @@ def obtener_porcentaje_cambio(criptomoneda):
     else:
         return "No se encontraron datos de porcentaje de cambio"
 
+def obtener_datos_woo(criptomoneda):
+    if criptomoneda == "BTC":
+        url = "https://dex.woo.org/en/trade/BTC_PERP"
+    else:
+        url = "https://dex.woo.org/en/trade/ETH_PERP"
+
+    proxies = {
+        "https": "scraperapi.render=true:ed44b678b839d0e71d4e1279cccf6ee5@proxy-server.scraperapi.com:8001"
+    }
+
+    r = requests.get(url, proxies=proxies, verify=False)
+    html_text = r.text
+    soup = BeautifulSoup(html_text, "html.parser")
+    span_element = soup.find("span", class_="orderly-inline-flex orderly-items-center orderly-gap-1 orderly-tabular-nums orderly-text-warning")
+
+    if span_element:
+        return span_element.text.strip()
+    else:
+        return "No se encontró el elemento span con las clases especificadas."
+
 # Interfaz de usuario con Streamlit
 st.title("Información de Criptomonedas")
 criptomoneda = st.selectbox("Selecciona una criptomoneda", ["BTC", "ETH"])
@@ -82,6 +100,8 @@ criptomoneda = st.selectbox("Selecciona una criptomoneda", ["BTC", "ETH"])
 if st.button("Obtener Información"):
     funding_df = obtener_funding(criptomoneda)
     porcentaje_cambio = obtener_porcentaje_cambio(criptomoneda)
+    datos_woo = obtener_datos_woo(criptomoneda)
     st.write("Funding de", criptomoneda)
     st.write(funding_df)
     st.write("Porcentaje de cambio:", porcentaje_cambio)
+    st.write("Datos Woo:", datos_woo)
