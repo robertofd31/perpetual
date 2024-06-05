@@ -1,6 +1,5 @@
 import requests
-import json
-import pandas as pd
+from bs4 import BeautifulSoup
 import streamlit as st
 
 def obtener_funding(criptomoneda):
@@ -48,11 +47,39 @@ def obtener_funding(criptomoneda):
         st.error(f"Error en la solicitud: {response.status_code}")
         st.error(response.text)
 
+def obtener_porcentaje_cambio(criptomoneda):
+    if criptomoneda == "BTC":
+        url = "https://scroll.satori.finance/trade/BTC-USD"
+    else:
+        url = "https://scroll.satori.finance/trade/"
+
+    proxies = {
+        "https": "scraperapi.render=true:ed44b678b839d0e71d4e1279cccf6ee5@proxy-server.scraperapi.com:8001"
+    }
+
+    r = requests.get(url, proxies=proxies, verify=False)
+    html_text = r.text
+    soup = BeautifulSoup(html_text, 'html.parser')
+    span_list = soup.findAll('span', {'data-v-5d706ddf': ''})
+    
+    span_list2 = []
+    for span in span_list:
+        if '%' in span.text:
+            span_list2.append(span.text.strip())
+    
+    if span_list2:
+        valor_porcentaje = span_list2[1].split('%')[0]
+        return valor_porcentaje
+    else:
+        return "No se encontraron datos de porcentaje de cambio"
+
 # Interfaz de usuario con Streamlit
-st.title("Obtener Funding de Criptomonedas")
+st.title("Información de Criptomonedas")
 criptomoneda = st.selectbox("Selecciona una criptomoneda", ["BTC", "ETH"])
 
-if st.button("Obtener Funding"):
+if st.button("Obtener Información"):
     funding_df = obtener_funding(criptomoneda)
+    porcentaje_cambio = obtener_porcentaje_cambio(criptomoneda)
     st.write("Funding de", criptomoneda)
     st.write(funding_df)
+    st.write("Porcentaje de cambio:", porcentaje_cambio)
