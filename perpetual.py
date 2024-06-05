@@ -2,9 +2,9 @@ import streamlit as st
 
 # Definir datos estáticos sobre los exchanges
 exchanges = {
-    "Woo": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": 0.0006},
-    "Hyperliquid": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": -0.0001},
-    "Satori": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": 0.0003}
+    "Woo": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": 0.000428},
+    "Hyperliquid": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": 0.0000125*8},
+    "Satori": {"taker_fee": 0.0004, "maker_fee": 0.0002, "funding_rate": 0.0000375*8}
 }
 
 # Definir la función para calcular la tabla
