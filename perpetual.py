@@ -66,6 +66,3 @@ if st.button("Calcular"):
     resultado = calcular_tabla(valor_trade, apalancamiento, num_dias)
     st.write(resultado)
 
-if st.button("Calcular"):
-    resultado = calcular_tabla(valor_trade, apalancamiento)
-    st.write(resultado)
