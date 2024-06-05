@@ -2,4 +2,3 @@ streamlit
 requests
 dune-client
 pandas
-beautifulsoup4==4.9.0
