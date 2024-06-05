@@ -28,7 +28,7 @@ def calcular_tabla(valor_trade, apalancamiento):
 
     # Calcular el beneficio por día en porcentaje y en dólares
     beneficio_por_dia_pct = diferencia_funding * 3
-    beneficio_en_dolares = beneficio_por_dia_pct / 100 * valor_trade * apalancamiento
+    beneficio_en_dolares = beneficio_por_dia_pct * valor_trade * apalancamiento
 
     # Calcular el break even en días y en horas
     break_even_dias = comisiones_totales / beneficio_en_dolares
