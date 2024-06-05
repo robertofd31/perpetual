@@ -24,7 +24,7 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
 
     # Calcular las comisiones totales y el volumen generado
     comisiones_totales = fee_exchange_menor + fee_exchange_mayor
-    volumen_generado = valor_trade * apalancamiento
+    volumen_generado = valor_trade * apalancamiento * 2
 
     # Calcular el beneficio por día en porcentaje y en dólares
     beneficio_por_dia_pct = diferencia_funding * 3
@@ -43,6 +43,7 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
         "Exchange": [exchange_menor_funding, exchange_mayor_funding],
         "Funding (%)": [f'{funding_menor*100:.2f}%', f'{funding_mayor*100:.2f}%'],
         "Fee ($)": [f'${fee_exchange_menor:.2f}', f'${fee_exchange_mayor:.2f}'],
+        "Diferencia Funding": f'%{diferencia_funding:.2f}',
         "Comisiones Totales ($)": f'${comisiones_totales:.2f}',
         "Volumen Generado ($)": f'${volumen_generado:.2f}',
         "Beneficio por Día (%)": f'{beneficio_por_dia_pct*100:.2f}%',
