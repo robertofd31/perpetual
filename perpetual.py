@@ -1,109 +1,60 @@
-import requests
-import pandas as pd
-import json
-from bs4 import BeautifulSoup
 import streamlit as st
 
-def obtener_funding(criptomoneda):
-    # URL de la API
-    url = "https://api.hyperliquid.xyz/info"
+# Definir datos estáticos sobre los exchanges
+exchanges = {
+    "Woo": {"taker_fee": 0.04, "maker_fee": 0.02, "funding_rate": 0.06},
+    "Hyperliquid": {"taker_fee": 0.04, "maker_fee": 0.02, "funding_rate": -0.01},
+    "Satori": {"taker_fee": 0.04, "maker_fee": 0.02, "funding_rate": 0.03}
+}
 
-    # Encabezados
-    headers = {
-        "Content-Type": "application/json"
+# Definir la función para calcular la tabla
+def calcular_tabla(valor_trade, apalancamiento):
+    # Encontrar el exchange con la mayor y menor tasa de financiación
+    exchange_menor_funding = min(exchanges, key=lambda x: exchanges[x]["funding_rate"])
+    exchange_mayor_funding = max(exchanges, key=lambda x: exchanges[x]["funding_rate"])
+
+    # Calcular las tasas de financiación y la diferencia entre ellas
+    funding_menor = exchanges[exchange_menor_funding]["funding_rate"]
+    funding_mayor = exchanges[exchange_mayor_funding]["funding_rate"]
+    diferencia_funding = funding_menor - funding_mayor
+
+    # Calcular las comisiones de taker por trade para ambos exchanges
+    fee_exchange_menor = exchanges[exchange_menor_funding]["taker_fee"] * apalancamiento * valor_trade
+    fee_exchange_mayor = exchanges[exchange_mayor_funding]["taker_fee"] * apalancamiento * valor_trade
+
+    # Calcular las comisiones totales y el volumen generado
+    comisiones_totales = fee_exchange_menor + fee_exchange_mayor
+    volumen_generado = valor_trade * apalancamiento
+
+    # Calcular el beneficio por día en porcentaje y en dólares
+    beneficio_por_dia_pct = diferencia_funding * 3
+    beneficio_en_dolares = beneficio_por_dia_pct / 100 * valor_trade * apalancamiento
+
+    # Calcular el break even en días y en horas
+    break_even_dias = comisiones_totales / beneficio_en_dolares
+    break_even_horas = break_even_dias * 24
+
+    return {
+        "Exchange Menor Funding": exchange_menor_funding,
+        "Exchange Mayor Funding": exchange_mayor_funding,
+        "Funding Menor": funding_menor,
+        "Funding Mayor": funding_mayor,
+        "Diferencia Funding": diferencia_funding,
+        "Fee Exchange Menor": fee_exchange_menor,
+        "Fee Exchange Mayor": fee_exchange_mayor,
+        "Comisiones Totales": comisiones_totales,
+        "Volumen Generado": volumen_generado,
+        "Beneficio por Día (%)": beneficio_por_dia_pct,
+        "Beneficio en Dólares": beneficio_en_dolares,
+        "Break Even (Días)": break_even_dias,
+        "Break Even (Horas)": break_even_horas
     }
 
-    # Cuerpo de la solicitud
-    data = {
-        "type": "metaAndAssetCtxs"
-    }
+# Configurar la interfaz de usuario con Streamlit
+st.title("Calculadora de Arbitraje de Perpetuos")
+valor_trade = st.number_input("Valor del Trade", min_value=0.01, step=0.01)
+apalancamiento = st.number_input("Apalancamiento", min_value=1, step=1)
 
-    # Hacer la solicitud POST
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    # Verificar si la solicitud fue exitosa
-    if response.status_code == 200:
-        response_data = response.json()
-
-        # Procesar la respuesta para crear DataFrames
-        universe_data = response_data[0]["universe"]
-        asset_context_data = response_data[1]
-
-        # Crear DataFrame para "universe"
-        universe_df = pd.DataFrame(universe_data)
-        
-        # Crear DataFrame para "asset contexts"
-        asset_context_df = pd.DataFrame(asset_context_data)
-        
-        # Añadir una columna 'name' al asset_context_df basada en el nombre
-        asset_context_df['name'] = universe_df['name']
-        
-        # Combinar ambos DataFrames basados en la columna 'name'
-        combined_df = pd.merge(universe_df, asset_context_df, on='name')
-        
-        # Filtrar por la criptomoneda seleccionada
-        result_df = combined_df[combined_df['name'] == criptomoneda][['name', 'funding']]
-        
-        return result_df
-    else:
-        st.error(f"Error en la solicitud: {response.status_code}")
-        st.error(response.text)
-
-def obtener_porcentaje_cambio(criptomoneda):
-    if criptomoneda == "BTC":
-        url = "https://scroll.satori.finance/trade/BTC-USD"
-    else:
-        url = "https://scroll.satori.finance/trade/"
-
-    proxies = {
-        "https": "scraperapi.render=true:ed44b678b839d0e71d4e1279cccf6ee5@proxy-server.scraperapi.com:8001"
-    }
-
-    r = requests.get(url, proxies=proxies, verify=False)
-    html_text = r.text
-    soup = BeautifulSoup(html_text, 'html.parser')
-    span_list = soup.findAll('span', {'data-v-5d706ddf': ''})
-    
-    span_list2 = []
-    for span in span_list:
-        if '%' in span.text:
-            span_list2.append(span.text.strip())
-    
-    if span_list2:
-        valor_porcentaje = span_list2[1].split('%')[0]
-        return valor_porcentaje
-    else:
-        return "No se encontraron datos de porcentaje de cambio"
-
-def obtener_datos_woo(criptomoneda):
-    if criptomoneda == "BTC":
-        url = "https://dex.woo.org/en/trade/BTC_PERP"
-    else:
-        url = "https://dex.woo.org/en/trade/ETH_PERP"
-
-    proxies = {
-        "https": "scraperapi.render=true:ed44b678b839d0e71d4e1279cccf6ee5@proxy-server.scraperapi.com:8001"
-    }
-
-    r = requests.get(url, proxies=proxies, verify=False)
-    html_text = r.text
-    soup = BeautifulSoup(html_text, "html.parser")
-    span_element = soup.find("span", class_="orderly-inline-flex orderly-items-center orderly-gap-1 orderly-tabular-nums orderly-text-warning")
-
-    if span_element:
-        return span_element.text.strip()
-    else:
-        return "No se encontró el elemento span con las clases especificadas."
-
-# Interfaz de usuario con Streamlit
-st.title("Información de Criptomonedas")
-criptomoneda = st.selectbox("Selecciona una criptomoneda", ["BTC", "ETH"])
-
-if st.button("Obtener Información"):
-    funding_df = obtener_funding(criptomoneda)
-    porcentaje_cambio = obtener_porcentaje_cambio(criptomoneda)
-    datos_woo = obtener_datos_woo(criptomoneda)
-    st.write("Funding de", criptomoneda)
-    st.write(funding_df)
-    st.write("Porcentaje de cambio:", porcentaje_cambio)
-    st.write("Datos Woo:", datos_woo)
+if st.button("Calcular"):
+    resultado = calcular_tabla(valor_trade, apalancamiento)
+    st.write(resultado)
