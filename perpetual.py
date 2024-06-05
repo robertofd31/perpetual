@@ -34,7 +34,7 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
     break_even_dias = comisiones_totales / beneficio_en_dolares
     break_even_horas = break_even_dias * 24
 
-    beneficio_total = num_dias * (beneficio_por_dia_pct - comisiones_totales)
+    beneficio_total = num_dias * beneficio_por_dia_pct - comisiones_totales
 
     # Calcular el APR
     APR = ((beneficio_total / num_dias) / (valor_trade * 2)) * 365
