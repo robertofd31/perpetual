@@ -8,7 +8,7 @@ exchanges = {
 }
 
 # Definir la función para calcular la tabla
-def calcular_tabla(valor_trade, apalancamiento):
+def calcular_tabla(valor_trade, apalancamiento, num_dias):
     # Encontrar el exchange con la mayor y menor tasa de financiación
     exchange_menor_funding = min(exchanges, key=lambda x: exchanges[x]["funding_rate"])
     exchange_mayor_funding = max(exchanges, key=lambda x: exchanges[x]["funding_rate"])
