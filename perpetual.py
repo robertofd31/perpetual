@@ -41,11 +41,11 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
 
     return {
         "Exchange": [exchange_menor_funding, exchange_mayor_funding],
-        "Funding (%)": [f'{funding_menor:.2f}%', f'{funding_mayor:.2f}%'],
+        "Funding (%)": [f'{funding_menor*100:.2f}%', f'{funding_mayor*100:.2f}%'],
         "Fee ($)": [f'${fee_exchange_menor:.2f}', f'${fee_exchange_mayor:.2f}'],
         "Comisiones Totales ($)": f'${comisiones_totales:.2f}',
         "Volumen Generado ($)": f'${volumen_generado:.2f}',
-        "Beneficio por Día (%)": f'{beneficio_por_dia_pct:.2f}%',
+        "Beneficio por Día (%)": f'{beneficio_por_dia_pct*100:.2f}%',
         "Beneficio en Dólares ($)": f'${beneficio_en_dolares:.2f}',
         "Break Even (Días)": f'{break_even_dias:.2f}',
         "Break Even (Horas)": f'{break_even_horas:.2f}',
