@@ -37,7 +37,7 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
     beneficio_total = num_dias * beneficio_en_dolares - comisiones_totales
 
     # Calcular el APR
-    APR = ((beneficio_total / num_dias) / (valor_trade * 2)) * 365
+    APR = round(((beneficio_total / num_dias) / (valor_trade * 2)) * 365 * 100,2)
 
     return {
         "Exchange Menor Funding": exchange_menor_funding,
