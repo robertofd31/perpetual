@@ -40,21 +40,17 @@ def calcular_tabla(valor_trade, apalancamiento, num_dias):
     APR = round(((beneficio_total / num_dias) / (valor_trade * 2)) * 365 * 100,2)
 
     return {
-        "Exchange Menor Funding": exchange_menor_funding,
-        "Exchange Mayor Funding": exchange_mayor_funding,
-        "Funding Menor": funding_menor,
-        "Funding Mayor": funding_mayor,
-        "Diferencia Funding": diferencia_funding,
-        "Fee Exchange Menor": fee_exchange_menor,
-        "Fee Exchange Mayor": fee_exchange_mayor,
-        "Comisiones Totales": comisiones_totales,
-        "Volumen Generado": volumen_generado,
-        "Beneficio por Día (%)": beneficio_por_dia_pct,
-        "Beneficio en Dólares": beneficio_en_dolares,
-        "Break Even (Días)": break_even_dias,
-        "Break Even (Horas)": break_even_horas,
-        "Beneficio Total": beneficio_total,
-        "APR": APR
+        "Exchange": [exchange_menor_funding, exchange_mayor_funding],
+        "Funding (%)": [f'{funding_menor:.2f}%', f'{funding_mayor:.2f}%'],
+        "Fee ($)": [f'${fee_exchange_menor:.2f}', f'${fee_exchange_mayor:.2f}'],
+        "Comisiones Totales ($)": f'${comisiones_totales:.2f}',
+        "Volumen Generado ($)": f'${volumen_generado:.2f}',
+        "Beneficio por Día (%)": f'{beneficio_por_dia_pct:.2f}%',
+        "Beneficio en Dólares ($)": f'${beneficio_en_dolares:.2f}',
+        "Break Even (Días)": f'{break_even_dias:.2f}',
+        "Break Even (Horas)": f'{break_even_horas:.2f}',
+        "Beneficio Total ($)": f'${beneficio_total:.2f}',
+        "APR (%)": f'{APR:.2f}%'
     }
 
 st.title("Calculadora de Arbitraje de Perpetuos")
